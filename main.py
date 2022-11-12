@@ -78,7 +78,7 @@ def showResult(Frame,sorted_data,listData):
 
     for i in range(10):
 
-        t = ToggledFrame(secondFrame,text=sorted_data.iloc[i]['Food and Description Thai'], relief="raised", borderwidth=1)
+        t = ToggledFrame(secondFrame,text=sorted_data.iloc[i]['Food and Description Thai'], relief="raised", borderwidth=2,bg="#9AFFAA")
         t.pack(fill="x", expand=1, pady=5, padx=5, anchor="n")
 
         ttk.Label(t.sub_frame, text='ความคล้ายคลึงทางโภชนาการ ' + str(listData[len(listData)-1-i])).pack()
@@ -174,7 +174,7 @@ def resultCalculator(Frame,root):
         # print("--------------")
         # print(Sort_df.iloc[0]['Food and Description Thai'])
 
-        btn = tkinter.Button(root,text="Click to open HeatMap")
+        btn = tkinter.Button(root,text="Click to open HeatMap",bg="#9AFFAA")
         btn.bind("<Button>",lambda e: openHeatMapUI(Sort_df))
 
         btn.pack(pady=10)
@@ -283,7 +283,7 @@ HeatMapFrame = tkinter.LabelFrame(frame, text="HeatMap")
 HeatMapFrame.grid(row=3, column=0, sticky="news", padx=20, pady=10)
 
 button = tkinter.Button(frame, text="Enter data",command=partial(
-    resultCalculator,ResultsFrame,HeatMapFrame))
+    resultCalculator,ResultsFrame,HeatMapFrame),bg="#9AFFAA")
 button.grid(row=4, column=0, sticky="news", padx=10, pady=10)
 
 createTempObject()
