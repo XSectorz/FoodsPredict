@@ -148,7 +148,9 @@ def checkCanCalCulate():
 
 def resultCalculator(Frame,root):
 
+
     if checkCanCalCulate():
+        clearResults(root)
         energy = float(EnergyInput.get())
         protein = float(ProteinInput.get())
         fat = float(FatInput.get())
