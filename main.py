@@ -2,6 +2,8 @@ import tkinter
 import pandas as pd
 import numpy as np
 from PIL import ImageTk, Image
+import matplotlib.pyplot as plt
+import seaborn as sns
 import ctypes
 import math
 
@@ -36,7 +38,7 @@ class ToggledFrame(tkinter.Frame):
             self.toggle_button.configure(text='+')
 
 
-refImages = [None] * 10
+refImages = [None] * 11
 
 def WarnBox(title, text, style):
     return ctypes.windll.user32.MessageBoxW(0, text, title, style)
@@ -84,6 +86,7 @@ def showResult(Frame,sorted_data,listData):
         canvas = tkinter.Canvas(t.sub_frame, width=200, height=200)
         canvas.pack()
         img = Image.open("images/" + sorted_data.iloc[i]['Food and Description Thai'] + ".jpg")
+        #img = Image.open("output/heatmap.jpg")
         resized_img = img.resize((200,200), Image.Resampling.LANCZOS)
         refImages[i] = ImageTk.PhotoImage(resized_img)
 
@@ -143,7 +146,7 @@ def checkCanCalCulate():
 
     return True
 
-def resultCalculator(Frame):
+def resultCalculator(Frame,root):
 
     if checkCanCalCulate():
         energy = float(EnergyInput.get())
@@ -171,19 +174,78 @@ def resultCalculator(Frame):
         # print("--------------")
         # print(Sort_df.iloc[0]['Food and Description Thai'])
 
+        btn = tkinter.Button(root,text="Click to open HeatMap")
+        btn.bind("<Button>",lambda e: openHeatMapUI(Sort_df))
+
+        btn.pack(pady=10)
+        #openHeatMapUI(root, Sort_df)
         showResult(Frame, Sort_df, listData)
+        #heatMap(root, Sort_df)
     else:
         WarnBox("Error", "ข้อมูลที่ใส่ผิดพลาดอาจจะมีปัญหาจาก\n1) ข้อมูลไม่ใช่ตัวเลข\n2) ข้อมูลมีค่าต้องมากกว่า 0", 0)
         return
 
+def openHeatMapUI(sortData):
+
+    for k, v in window.children.copy().items():
+        if isinstance(v, tkinter.Toplevel):
+            v.destroy()
+
+    newWindow = tkinter.Toplevel(window)
+    newWindow.title("HeatMap UI")
+    newWindow.iconbitmap("icon.ico")
+
+    newWindow.resizable(False,False)
+    newWindow.geometry("800x800")
+
+    heatMap(newWindow, sortData)
+
+def heatMap(frame,sortData):
+
+    clearResults(frame)
+    cor = sortData.iloc[:10, 1:].transpose().corr()
+    fig, ax = plt.subplots(figsize=(20, 20))
+    heatmap = sns.heatmap(data=cor, cmap='Greens', annot=True,
+                annot_kws={
+                    'fontsize': 16,
+                    'fontweight': 'bold'
+                }, fmt='.5g')
+    heatmap_figure = heatmap.get_figure()
+    heatmap_figure.savefig('output/heatmap.jpg')
+
+    # HeatMap Graph Frame
+    HeatMapGraphFrame = tkinter.LabelFrame(frame, text="HeatMapGraph")
+    HeatMapGraphFrame.grid(row=0, column=0, sticky="news", padx=20, pady=10)
+
+    Newcanvas = tkinter.Canvas(HeatMapGraphFrame, width=800, height=650)
+    Newcanvas.grid(row=0,column=0)
+    Newcanvas.pack()
+    img = Image.open("output/heatmap.jpg")
+    resized_img = img.resize((800, 650), Image.Resampling.LANCZOS)
+    refImages[10] = ImageTk.PhotoImage(resized_img)
+    Newcanvas.create_image(0, 0, image=refImages[10], anchor='nw')
+
+    index = 0
+
+    for x in range(2):
+        for y in range(5):
+            framegrid = tkinter.Frame(master=frame,relief=tkinter.SUNKEN,borderwidth=1.5)
+            framegrid.place(x=40+(y*135),y=700+(x*40),height=45,width=140)
+            name = sortData.iloc[index]['Food and Description Thai']
+            #print(name,index)
+            labelGrid = tkinter.Label(master=framegrid,text="ID : " + str(sortData[sortData['Food and Description Thai'] == name].index[0])
+                                      + "\n" + name)
+            labelGrid.pack(padx=3,pady=3)
+            index += 1
+
 def createTempObject():
 
-    for i in range(10):
+    for i in range(11):
         refImages[i] = ttk.Label()
 
 window = tkinter.Tk()
 window.title("Linear - ChooseFoods")
-window.resizable(False,False)
+window.resizable(True,True)
 window.iconbitmap("icon.ico")
 
 frame = tkinter.Frame(window)
@@ -216,10 +278,13 @@ for widget in Inputframe.winfo_children():
 ResultsFrame = tkinter.LabelFrame(frame, text="Results")
 ResultsFrame.grid(row=2, column=0, sticky="news", padx=20, pady=10)
 
+# HeatMap Frame
+HeatMapFrame = tkinter.LabelFrame(frame, text="HeatMap")
+HeatMapFrame.grid(row=3, column=0, sticky="news", padx=20, pady=10)
+
 button = tkinter.Button(frame, text="Enter data",command=partial(
-    resultCalculator,ResultsFrame))
-button.grid(row=3, column=0, sticky="news", padx=10, pady=10)
+    resultCalculator,ResultsFrame,HeatMapFrame))
+button.grid(row=4, column=0, sticky="news", padx=10, pady=10)
 
 createTempObject()
-
 window.mainloop()
