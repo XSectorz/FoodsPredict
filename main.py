@@ -184,7 +184,7 @@ def resultCalculator(Frame,root):
         showResult(Frame, Sort_df, listData)
         #heatMap(root, Sort_df)
     else:
-        WarnBox("Error", "ข้อมูลที่ใส่ผิดพลาดอาจจะมีปัญหาจาก\n1) ข้อมูลไม่ใช่ตัวเลข\n2) ข้อมูลมีค่าต้องมากกว่า 0", 0)
+        WarnBox("Error", "ข้อมูลที่ใส่ผิดพลาดอาจจะมีปัญหาจาก\n1) ข้อมูลไม่ใช่ตัวเลข\n2) ข้อมูลมีค่าต้องมากกว่า 0")
         return
 
 def openHeatMapUI(sortData):
