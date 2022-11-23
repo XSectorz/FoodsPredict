@@ -1,10 +1,10 @@
 import tkinter
+from tkinter import messagebox
 import pandas as pd
 import numpy as np
 from PIL import ImageTk, Image
 import matplotlib.pyplot as plt
 import seaborn as sns
-import ctypes
 import math
 
 from functools import partial
@@ -40,8 +40,8 @@ class ToggledFrame(tkinter.Frame):
 
 refImages = [None] * 11
 
-def WarnBox(title, text, style):
-    return ctypes.windll.user32.MessageBoxW(0, text, title, style)
+def WarnBox(title, text):
+    return tkinter.messagebox.showerror(title=title, message=text)
 
 def clearResults(Frame):
    for widgets in Frame.winfo_children():
